@@ -12,7 +12,9 @@ The unit tests are written under the `UnitTestsProject` also one folder above, r
 
 Path to the Unit test: [KnnClassifierTests.cs](https://github.com/ayan1948/neocortexapi/blob/master/source/UnitTestsProject/KnnClassifierTests.cs)
 
-##Changed Files
+## Changed Files
+
+Reason being function overloading in HTM Classifier worked when called into the Predicator Function. But calling a more Generic Classifier type into the Predicator wasn't available because those function parameters weren't available in the IClassifier, this required me to find a common ground and change the implementation without affecting the program.
 
 1. [IClassifier.cs](https://github.com/ayan1948/neocortexapi/blob/master/source/NeoCortexApi/Classifiers/IClassifier.cs)
 2. [Predicator.cs](https://github.com/ayan1948/neocortexapi/blob/master/source/NeoCortexApi/Predictor.cs)
