@@ -1,5 +1,34 @@
-<h3 align="center">Project Name</h3>
-<h3 align="center">ML22/23- 2 Investigate and Implement KNN Classifier</h3>
+# ML22/23- 2 Investigate and Implement KNN Classifier
+
+## Implementation
+
+This KNN classifier takes an input as a sequence of on: 1, off: 0 which is provided to be labeled.
+Which then needs to run through a model (a Dictionary mapping of labels to their sequences) to be classified, consisting of labeled sequences.
+Using the K-nearest-neighbor algorithm, the Unclassified sequence needs to be given a sequence of labels from the closest resemblances to the least.
+
+For example:
+```
+_models = {
+    "A" : [[1, 3, 4, 7, 12, 13, 14], [2, 3, 5, 6, 7, 8, 12]],
+    "B" : [[0, 4, 5, 6, 9, 10, 13], [2, 3, 4, 5, 6, 7, 8]],
+    "C" : [[1, 4, 5, 6, 8, 10, 15], [1, 2, 7, 8, 13, 15, 16]]
+}
+```
+
+```
+unclassified = [1, 3, 4, 7, 12, 14, 15]
+```
+
+The Verdict: `List = [A, B, ...]` "A" being the closest match, "B" the next closest match and so on ...
+
+The Output in this case is a list of ClassifierResult objects.
+
+### Learn
+This method takes in the labeled data and inserts it to a dictionary mapping of string to a list of sequences. `Dictionary<string, List<int[]>`.
+
+### Predict
+This method is responsible in predicting the unclassified/unlabeled sequence it is provided during execution from the pipeline. It then runs the KNN,
+code to fetch the closest match.
 
 ## Getting Started:
 
