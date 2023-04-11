@@ -16,6 +16,7 @@ namespace UnitTestsProject
         private int cellsPerColumn = 25;
         private KNeighborsClassifier<string, ComputeCycle> knnClassifier;
         private Dictionary<string, List<double>> sequences;
+        private List<Cell> lastActiveCells = new List<Cell>();
 
         [TestInitialize]
         public void Setup()
@@ -28,7 +29,7 @@ namespace UnitTestsProject
         }
 
         /// <summary>
-        /// Here our taget is to whether we are getting any predicted value for input we have given one sequence s1
+        /// Here our target is to whether we are getting any predicted value for input we have given one sequence s1
         /// and check from this sequence each input, will we get prediction or not.
         /// </summary>
         [DataTestMethod]
@@ -38,11 +39,7 @@ namespace UnitTestsProject
         [TestMethod]
         public void CheckNextValueIsNotEmpty(int input)
         {
-            //var tm = layer1.HtmModules.FirstOrDefault(m => m.Value is TemporalMemory);
-            //((TemporalMemory)tm.Value).Reset(mem);
-
             var predictiveCells = getMockCells(CellActivity.PredictiveCell);
-
             var res = knnClassifier.GetPredictedInputValues(predictiveCells.ToArray(), 3);
 
             var tokens = res.First().PredictedInput.Split('_');
@@ -53,8 +50,7 @@ namespace UnitTestsProject
         }
 
         /// <summary>
-        ///Here we are checking if cells count is zero
-        ///will we get any kind of exception or not
+        /// Here we are checking if cell count is zero will we get any kind of exception.
         /// </summary>
         [TestMethod]
         [TestCategory("Prod")]
@@ -95,7 +91,6 @@ namespace UnitTestsProject
 
                 previousInputs.Add("-1.0");
 
-                //
                 // Now training with SP+TM. SP is pretrained on the given input pattern set.
                 for (int i = 0; i < maxCycles; i++)
                 {
@@ -105,11 +100,11 @@ namespace UnitTestsProject
                         if (previousInputs.Count > maxPrevInputs + 1)
                             previousInputs.RemoveAt(0);
 
-                        // In the pretrained SP with HPC, the TM will quickly learn cells for patterns
-                        // In that case the starting sequence 4-5-6 might have the sam SDR as 1-2-3-4-5-6,
-                        // Which will result in returning of 4-5-6 instead of 1-2-3-4-5-6.
-                        // knnClassifier allways return the first matching sequence. Because 4-5-6 will be as first
-                        // memorized, it will match as the first one.
+                        /* In the pretrained SP with HPC, the TM will quickly learn cells for patterns
+                        In that case the starting sequence 4-5-6 might have the sam SDR as 1-2-3-4-5-6,
+                        Which will result in returning of 4-5-6 instead of 1-2-3-4-5-6.
+                        knnClassifier allways return the first matching sequence. Because 4-5-6 will be as first
+                        memorized, it will match as the first one. */
                         if (previousInputs.Count < maxPrevInputs)
                             continue;
 
@@ -121,15 +116,12 @@ namespace UnitTestsProject
             }
         }
 
-
-        private List<Cell> lastActiveCells = new List<Cell>();
-
         /// <summary>
         /// Mock the cells data that we get from the Temporal Memory
         /// </summary>
         private List<Cell> getMockCells(CellActivity cellActivity)
         {
-            List<Cell> cells = new List<Cell>();
+            var cells = new List<Cell>();
             for (int k = 0; k < Random.Shared.Next(5, 20); k++)
             {
                 int parentColumnIndx = Random.Shared.Next(0, numColumns);
@@ -140,18 +132,12 @@ namespace UnitTestsProject
             }
 
             if (cellActivity == CellActivity.ActiveCell)
-            {
                 lastActiveCells = cells;
-            }
+
             else if (cellActivity == CellActivity.PredictiveCell)
-            {
-                // Append one of the cell from lastActiveCells to the randomly generated preditive cells to have some similarity
-                cells.AddRange(lastActiveCells.GetRange
-                    (
-                        Random.Shared.Next(lastActiveCells.Count), 1
-                    )
-                );
-            }
+                /* Append one of the cell from lastActiveCells to the randomly generated predictive cells to have some
+                similarity */
+                cells.AddRange(lastActiveCells.GetRange(Random.Shared.Next(lastActiveCells.Count), 1));
 
             return cells;
         }

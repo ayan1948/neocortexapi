@@ -6,27 +6,33 @@ using System.Linq;
 
 namespace NeoCortexApi.Classifiers
 {
+    /// <summary>
+    /// Extends the foreach method to give out an item and index of type IEnumerable.
+    /// </summary>
     public static class EnumExtension
     {
         /// <summary>
-        /// Extends the foreach method to take a the item and index.
         /// For Example: List[int].foreach((item, idx) => (some operation!!!))
         /// </summary>
         /// <param name="self">Take in an Enumerable object</param>
-        /// <typeparam name="T">Generic type string</typeparam>
+        /// <typeparam name="T">A single Generic item from the IEnumerable</typeparam>
         /// <returns>null</returns>
         public static IEnumerable<(T item, int index)> WithIndex<T>(this IEnumerable<T> self)
             => self.Select((item, index) => (item, index));
     }
-
+    
+    /// <summary>
+    /// Returns the default value of the declared type.
+    /// i.e var sample = DefaultDictionary[string, int]()
+    /// >>> sample['A']
+    /// >>> 0
+    /// </summary>
+    /// <typeparam name="TKey">A key of Generic type</typeparam>
+    /// <typeparam name="TValue">A newly created value of Generic type</typeparam>
     public class DefaultDictionary<TKey, TValue> : Dictionary<TKey, TValue> where TValue : new()
     {
         /// <summary>
         /// Implementing the DefaultDict similar to python.
-        /// i.e var sample = DefaultDictionary[string, int]()
-        /// >>> sample['A']
-        /// >>> 0
-        /// prints the default value of in which is 0.
         /// </summary>
         /// <param name="key">A dictionary key.</param>
         public new TValue this[TKey key]
@@ -77,21 +83,26 @@ namespace NeoCortexApi.Classifiers
     }
 
     /// <summary>
-    /// This KNN classifier takes an input as a sequence of on: 1, off: 0 which is provided for classification.
+    /// This KNN classifier takes an input as a sequence of on: 1, off: 0 which is provided to be labeled.
     /// 
-    /// For example: [ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0] = Unclassified
+    /// For example: [1, 3, 4, 7, 12, 14, 15] = Unclassified
     ///
-    /// Which then needs to run through a model of similar sequence to be classified, comparing which sequence it
-    /// resembles closest to. The K-nearest-neighbor algorithm is implemented with this regard for getting the closest
-    /// resemblance.
+    /// Which then needs to run through a model to be classified, consisting of labeled sequences. Using the
+    /// K-nearest-neighbor algorithm, the Unclassified sequence needs to be given a sequence of labels from the closest
+    /// resemblances to the least. 
     ///
     /// For example:
-    /// models = { A = [[ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0], ...],
-    ///                B = [[10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0], ...] }
-    /// unknown = [ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]
-    ///
-    /// The verdict in this case is a list of ClassifierResult objects which is sort in the order of highest match.
+    /// _models = {
+    ///     "A" : [[1, 3, 4, 7, 12, 13, 14], [2, 3, 5, 6, 7, 8, 12]],
+    ///     "B" : [[0, 4, 5, 6, 9, 10, 13], [2, 3, 4, 5, 6, 7, 8]],
+    ///     "C" : [[1, 4, 5, 6, 8, 10, 15], [1, 2, 7, 8, 13, 15, 16]]
+    /// }
     /// 
+    /// unknown = [1, 3, 4, 7, 12, 14, 15]
+    ///
+    /// The Verdict: List = [A, B, ...] "A" being the closest match, "B" the next closest match and so on ...
+    ///
+    /// The Output in this case is a list of ClassifierResult objects which is sort in the order of highest match.
     /// </summary>
     public class KNeighborsClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>
     {
@@ -228,21 +239,13 @@ namespace NeoCortexApi.Classifiers
                 return new List<ClassifierResult<TIN>>();
 
             var unclassifiedSequence = unclassifiedCells.Select(idx => idx.Index).ToArray();
-            _nNeighbors = _models.Values.Count;
             var mappedElements = new DefaultDictionary<int, List<ClassificationAndDistance>>();
+            _nNeighbors = _models.Values.Count;
 
             foreach (var model in _models)
             {
-                /*
-                 * sequence: [<int>, <int>, ...]
-                 * idx: <int>
-                 */
                 foreach (var (sequence, idx) in model.Value.WithIndex())
                 {
-                    /* 
-                     * dict.Key: <int>
-                     * dict.Value: <int>,
-                     */
                     foreach (var dict in GetDistanceTable(sequence, ref unclassifiedSequence))
                         mappedElements[dict.Key].Add(new ClassificationAndDistance(model.Key, dict.Value, idx));
                 }

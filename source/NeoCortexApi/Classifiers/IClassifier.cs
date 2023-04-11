@@ -9,7 +9,6 @@ namespace NeoCortexApi.Classifiers
     public interface IClassifier<TIN, TOUT>
     {
         void Learn(TIN input, Cell[] output);
-
         List<ClassifierResult<TIN>> GetPredictedInputValues(Cell[] predictiveCells, short howMany = 1);
     }
 }
