@@ -20,7 +20,7 @@ namespace NeoCortexApi.Classifiers
         public static IEnumerable<(T item, int index)> WithIndex<T>(this IEnumerable<T> self)
             => self.Select((item, index) => (item, index));
     }
-    
+
     /// <summary>
     /// Returns the default value of the declared type.
     /// i.e var sample = DefaultDictionary[string, int]()
@@ -83,15 +83,14 @@ namespace NeoCortexApi.Classifiers
     }
 
     /// <summary>
-    /// This KNN classifier takes an input as a sequence of on: 1, off: 0 which is provided to be labeled.
-    /// 
-    /// For example: [1, 3, 4, 7, 12, 14, 15] = Unclassified
+    /// The KNN (K-Nearest-Neighbor) Classifier is designed and integrated with the Neocortex API. It takes in a
+    /// sequence of values and preassigned labels to train the model. Once the model (a Dictionary mapping of labels to
+    /// their sequences) is trained the user can give unclassified sequence that needs to be labeled.
     ///
-    /// Which then needs to run through a model to be classified, consisting of labeled sequences. Using the
-    /// K-nearest-neighbor algorithm, the Unclassified sequence needs to be given a sequence of labels from the closest
-    /// resemblances to the least. 
+    /// There are three sequences A, B and C which we will use to train the Classifier and then the classifier will
+    /// predict the label value for unclassified sequence.
     ///
-    /// For example:
+    /// Take a look at below example:
     /// _models = {
     ///     "A" : [[1, 3, 4, 7, 12, 13, 14], [2, 3, 5, 6, 7, 8, 12]],
     ///     "B" : [[0, 4, 5, 6, 9, 10, 13], [2, 3, 4, 5, 6, 7, 8]],
