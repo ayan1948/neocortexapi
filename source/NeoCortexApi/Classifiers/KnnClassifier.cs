@@ -172,11 +172,6 @@ namespace NeoCortexApi.Classifiers
         private List<ClassifierResult<string>> Voting(Dictionary<int, List<ClassificationAndDistance>> mapping,
             short howMany)
         {
-            /*
-             * A Dictionary Mapping of:-
-             * Classifier label: <string>,
-             * Count: <int>
-             */
             var votes = new DefaultDictionary<string, int>();
             var overLaps = new Dictionary<string, int>();
             var similarity = new Dictionary<string, double>();
