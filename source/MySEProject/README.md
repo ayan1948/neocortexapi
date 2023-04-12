@@ -2,11 +2,13 @@
 
 ## Implementation
 
-This KNN classifier takes an input as a sequence of on: 1, off: 0 which is provided to be labeled.
-Which then needs to run through a model (a Dictionary mapping of labels to their sequences) to be classified, consisting of labeled sequences.
-Using the K-nearest-neighbor algorithm, the Unclassified sequence needs to be given a sequence of labels from the closest resemblances to the least.
+The KNN (K-Nearest-Neighbor ) Classifier is designed and integrated with the Neocortex API. It takes in a sequnce of values and preassigned labels to train the model.
+Once the model (a Dictionary mapping of labels to their sequences) is trained the user can give unclassified sequence that needs to be labeled.
 
-For example:
+Take a look at below example:
+
+There are  three sequnces A, B and C which we will use to train the Classifier and then the classifier will predict the label value for unclassified sequence.
+
 ```
 _models = {
     "A" : [[1, 3, 4, 7, 12, 13, 14], [2, 3, 5, 6, 7, 8, 12]],
@@ -20,6 +22,8 @@ unclassified = [1, 3, 4, 7, 12, 14, 15]
 ```
 
 The Verdict: `List = [A, B, ...]` "A" being the closest match, "B" the next closest match and so on ...
+
+
 
 The Output in this case is a list of ClassifierResult objects.
 
