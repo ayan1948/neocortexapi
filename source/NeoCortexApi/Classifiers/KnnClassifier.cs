@@ -3,6 +3,27 @@ using System.Collections.Generic;
 using NeoCortexApi.Entities;
 using System.Linq;
 
+/*
+The KNN (K-Nearest-Neighbor) Classifier is designed and integrated with the Neocortex API. It takes in a
+sequence of values and preassigned labels to train the model. Once the model (a Dictionary mapping of labels to
+their sequences) is trained the user can give unclassified sequence that needs to be labeled.
+
+There are three sequences A, B and C which we will use to train the Classifier and then the classifier will
+predict the label value for unclassified sequence.
+
+Take a look at below example:
+_models = {
+    "A" : [[1, 3, 4, 7, 12, 13, 14], [2, 3, 5, 6, 7, 8, 12]],
+    "B" : [[0, 4, 5, 6, 9, 10, 13], [2, 3, 4, 5, 6, 7, 8]],
+    "C" : [[1, 4, 5, 6, 8, 10, 15], [1, 2, 7, 8, 13, 15, 16]]
+}
+
+unknown = [1, 3, 4, 7, 12, 14, 15]
+
+The Verdict: List = [A, B, ...] "A" being the closest match, "B" the next closest match and so on ...
+
+The Output in this case is a list of ClassifierResult objects which is sort in the order of highest match.
+*/
 
 namespace NeoCortexApi.Classifiers
 {
@@ -27,8 +48,8 @@ namespace NeoCortexApi.Classifiers
     /// >>> sample['A']
     /// >>> 0
     /// </summary>
-    /// <typeparam name="TKey">A key of Generic type</typeparam>
-    /// <typeparam name="TValue">A newly created value of Generic type</typeparam>
+    /// <typeparam name="TKey">A key of Generic type.</typeparam>
+    /// <typeparam name="TValue">A newly created value of Generic type.</typeparam>
     public class DefaultDictionary<TKey, TValue> : Dictionary<TKey, TValue> where TValue : new()
     {
         /// <summary>
@@ -57,8 +78,19 @@ namespace NeoCortexApi.Classifiers
     /// </summary>
     public class ClassificationAndDistance : IComparable<ClassificationAndDistance>
     {
+        /// <summary>
+        /// Comparison classification with respect to model data.
+        /// </summary>
         public string Classification { get; }
+
+        /// <summary>
+        /// Distance with respect to classification of a model data.
+        /// </summary>
         public int Distance { get; }
+
+        /// <summary>
+        /// Storing the SDR number under the classification. 
+        /// </summary>
         public int ClassificationNo { get; }
 
         /// <summary>
@@ -77,31 +109,13 @@ namespace NeoCortexApi.Classifiers
         /// <summary>
         /// Implementation of the Method for sorting the given generic object.
         /// </summary>
-        /// <param name="other">Past object of the implementation for comparison</param>
-        /// <returns>Comparison between past and present object</returns>
+        /// <param name="other">Past object of the implementation for comparison.</param>
+        /// <returns>Comparison between past and present object.</returns>
         public int CompareTo(ClassificationAndDistance other) => Distance.CompareTo(other.Distance);
     }
 
     /// <summary>
-    /// The KNN (K-Nearest-Neighbor) Classifier is designed and integrated with the Neocortex API. It takes in a
-    /// sequence of values and preassigned labels to train the model. Once the model (a Dictionary mapping of labels to
-    /// their sequences) is trained the user can give unclassified sequence that needs to be labeled.
-    ///
-    /// There are three sequences A, B and C which we will use to train the Classifier and then the classifier will
-    /// predict the label value for unclassified sequence.
-    ///
-    /// Take a look at below example:
-    /// _models = {
-    ///     "A" : [[1, 3, 4, 7, 12, 13, 14], [2, 3, 5, 6, 7, 8, 12]],
-    ///     "B" : [[0, 4, 5, 6, 9, 10, 13], [2, 3, 4, 5, 6, 7, 8]],
-    ///     "C" : [[1, 4, 5, 6, 8, 10, 15], [1, 2, 7, 8, 13, 15, 16]]
-    /// }
-    /// 
-    /// unknown = [1, 3, 4, 7, 12, 14, 15]
-    ///
-    /// The Verdict: List = [A, B, ...] "A" being the closest match, "B" the next closest match and so on ...
-    ///
-    /// The Output in this case is a list of ClassifierResult objects which is sort in the order of highest match.
+    /// Implementation of the KNN algorithm. 
     /// </summary>
     public class KNeighborsClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>
     {
@@ -110,7 +124,7 @@ namespace NeoCortexApi.Classifiers
         private int _sdrs = 10;
 
         /// <summary>
-        /// This method compares a single value with a sequence of values from given sequence
+        /// This method compares a single value with a sequence of values from given sequence.
         /// </summary>
         /// <param name="classifiedSequence">
         /// The active indices from the classified Sequence.
@@ -137,8 +151,8 @@ namespace NeoCortexApi.Classifiers
         /// <summary>
         /// This function computes the distances of the unclassified points to the distance of the classified points.
         /// </summary>
-        /// <param name="classifiedSequence">One of the sequences received from the SDR</param>
-        /// <param name="unclassifiedSequence">The unknown sequence to be classified</param>
+        /// <param name="classifiedSequence">One of the sequences received from the SDR.</param>
+        /// <param name="unclassifiedSequence">The unknown sequence to be classified.</param>
         /// <returns>
         /// Returns a dictionary mapping of the Unclassified sequence index to the shortest distance. Done for all
         /// indices of the unclassified sequence.
@@ -165,7 +179,7 @@ namespace NeoCortexApi.Classifiers
         ///                     ...
         ///                  }
         /// </param>
-        /// <param name="howMany">The amount of desired outputs</param>
+        /// <param name="howMany">The amount of desired outputs.</param>
         /// <returns>
         /// Returns a list of ClassifierResult objects ranked based on the closest resemblances.
         /// </returns>
@@ -224,8 +238,8 @@ namespace NeoCortexApi.Classifiers
         /// <summary>
         /// This method is called in the pipeline when an unknown sequence needs to be classified.
         /// </summary>
-        /// <param name="unclassifiedCells">A sequence of Cell objects</param>
-        /// <param name="howMany">Number of desired outputs</param>
+        /// <param name="unclassifiedCells">A sequence of Cell objects.</param>
+        /// <param name="howMany">Number of desired outputs.</param>
         /// <returns>Returns a list of ClassifierResult objects ranked based on the closest resemblances</returns>
         public List<ClassifierResult<TIN>> GetPredictedInputValues(Cell[] unclassifiedCells, short howMany = 1)
         {
@@ -252,10 +266,10 @@ namespace NeoCortexApi.Classifiers
         }
 
         /// <summary>
-        /// This Function adds and removes SDRs to the model
+        /// This Function adds and removes SDRs to the model.
         /// </summary>
-        /// <param name="input">The classification type</param>
-        /// <param name="cells">object of type Cell</param>
+        /// <param name="input">The classification type.</param>
+        /// <param name="cells">object of type Cell.</param>
         public void Learn(TIN input, Cell[] cells)
         {
             var classification = input as string;
