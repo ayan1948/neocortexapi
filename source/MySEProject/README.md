@@ -1,13 +1,19 @@
-# ML22/23- 2 Investigate and Implement KNN Classifier
+# KNN Classifier
 
 ## Implementation
 
-The KNN (K-Nearest-Neighbor ) Classifier is designed and integrated with the Neocortex API. It takes in a sequnce of values and preassigned labels to train the model.
-Once the model (a Dictionary mapping of labels to their sequences) is trained the user can give unclassified sequence that needs to be labeled.
+The KNN (K-Nearest-Neighbor) Classifier is designed and integrated with the Neocortex API. It takes in a sequence of
+values and preassigned labels to train the model. Once the model (a Dictionary mapping of labels to their sequences) is
+trained the user can give unclassified sequence that needs to be labeled.
 
-Take a look at below example:
+**For Example:**
 
-There are  three sequnces A, B and C which we will use to train the Classifier and then the classifier will predict the label value for unclassified sequence.
+There are three sequences A, B and C which needs to be trained(`_model` is fed with _labeled/classified_ sequences), and
+this is done using the `void Learn(TIN input, Cell[] cells)` method. Then KNN implementation can predict the label for
+the provided _unclassified/unlabeled_ sequence in the next stage of the pipeline using the
+`List<ClassifierResult<TIN>> GetPredictedInputValues(Cell[] unclassifiedCells, short howMany)` method.
+
+_**Sample Data**_
 
 ```
 _models = {
@@ -23,31 +29,33 @@ unclassified = [1, 3, 4, 7, 12, 14, 15]
 
 The Verdict: `List = [A, B, ...]` "A" being the closest match, "B" the next closest match and so on ...
 
-
-
 The Output in this case is a list of ClassifierResult objects.
-
-### Learn
-This method takes in the labeled data and inserts it to a dictionary mapping of string to a list of sequences. `Dictionary<string, List<int[]>`.
-
-### Predict
-This method is responsible in predicting the unclassified/unlabeled sequence it is provided during execution from the pipeline. It then runs the KNN,
-code to fetch the closest match.
 
 ## Getting Started:
 
-Go to the `Samples` folder which is one folder above; and inside where a folder names NeoCortexApiSample is present. From there run the `Program.cs` file to run the KNN Classifier.
+Go to the `Samples` folder which is one folder above and inside where a folder names NeoCortexApiSample is present.
+From there run the `Program.cs` file to run the KNN Classifier.
 
-Path to the Project: [KnnClassifier.cs](https://github.com/ayan1948/neocortexapi/blob/master/source/NeoCortexApi/Classifiers/KnnClassifier.cs)
+```bash
+dotnet run --project "../Samples/NeoCortexApiSample/NeoCortexApiSample.csproj"
+```
+
+Path to the
+Project: [KnnClassifier.cs](https://github.com/ayan1948/neocortexapi/blob/master/source/NeoCortexApi/Classifiers/KnnClassifier.cs)
 
 ## Testing
-The unit tests are written under the `UnitTestsProject` also one folder above, run the `KnnClassifierTests.cs` for the unittests.
 
-Path to the Unit test: [KnnClassifierTests.cs](https://github.com/ayan1948/neocortexapi/blob/master/source/UnitTestsProject/KnnClassifierTests.cs)
+The unit tests are written under the `UnitTestsProject` also one folder above, run the `KnnClassifierTests.cs` for the
+unittests.
+
+Path to the Unit
+test: [KnnClassifierTests.cs](https://github.com/ayan1948/neocortexapi/blob/master/source/UnitTestsProject/KnnClassifierTests.cs)
 
 ## Changed Files
 
-Reason being function overloading in HTM Classifier worked when called into the Predicator Function. But calling a more Generic Classifier type into the Predicator wasn't available because those function parameters weren't available in the IClassifier, this required me to find a common ground and change the implementation without affecting the program.
+Reason being function overloading in HTM Classifier worked when called into the Predicator Function. But calling a more
+Generic Classifier type into the Predicator wasn't available because those function parameters weren't available in the
+IClassifier, this required me to find a common ground and change the implementation without affecting the program.
 
 1. [IClassifier.cs](https://github.com/ayan1948/neocortexapi/blob/master/source/NeoCortexApi/Classifiers/IClassifier.cs)
 2. [Predicator.cs](https://github.com/ayan1948/neocortexapi/blob/master/source/NeoCortexApi/Predictor.cs)
