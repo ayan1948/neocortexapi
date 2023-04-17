@@ -8,7 +8,7 @@ The KNN (K-Nearest-Neighbor) Classifier is designed and integrated with the Neoc
 sequence of values and preassigned labels to train the model. Once the model (a Dictionary mapping of labels to
 their sequences) is trained the user can give unclassified sequence that needs to be labeled.
 
-There are three sequences A, B and C which we will use to train the Classifier and then the classifier will
+There are three labels A, B and C which has 6 sequnces in total each label has two sequnces we will use these sequnces to train the Classifier and then the classifier will
 predict the label value for unclassified sequence.
 
 Take a look at below example:
