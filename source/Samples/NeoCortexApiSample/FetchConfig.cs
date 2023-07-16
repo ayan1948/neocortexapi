@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using NeoCortexApi.Entities;
 using Newtonsoft.Json;
@@ -8,14 +9,15 @@ namespace NeoCortexApiSample
 {
     public class FetchConfig
     {
+        static string _connectionString = Environment.GetEnvironmentVariable("Connection_String");
+
         /// <summary>
         /// Initializes object with the specified parameters.
         /// </summary>
-        /// <param name="ConnectionString"></param>
-        public static HtmConfig ConfigurationHtm(string ConnectionString)
+        public static HtmConfig ConfigurationHtm()
         {
-            var container = new BlobContainerClient(ConnectionString, "knn-htm-config");
-            var blob = container.GetBlobClient("htm-config.json");
+            var container = new BlobContainerClient(_connectionString, "configuration");
+            var blob = container.GetBlobClient("HTMConfig.json");
             using (var stream = blob.OpenReadAsync().Result)
             using (var sr = new StreamReader(stream))
             using (var jsonStream = new JsonTextReader(sr))
@@ -23,14 +25,13 @@ namespace NeoCortexApiSample
                 return JsonSerializer.CreateDefault().Deserialize<HtmConfig>(jsonStream);
             }
         }
-        
+
         /// <summary>
         /// Initializes object with the specified parameters.
         /// </summary>
-        /// <param name="ConnectionString"></param>
-        public static Dictionary<string, object> Settings(string ConnectionString)
+        public static Dictionary<string, object> Settings()
         {
-            var container = new BlobContainerClient(ConnectionString, "knn-htm-config");
+            var container = new BlobContainerClient(_connectionString, "configuration");
             var blob = container.GetBlobClient("settings.json");
             using (var stream = blob.OpenReadAsync().Result)
             using (var sr = new StreamReader(stream))
